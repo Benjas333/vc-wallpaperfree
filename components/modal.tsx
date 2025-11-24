@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { Button, Paragraph } from "@components/index";
 import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize } from "@utils/modal";
-import { Button, SettingsRouter, Text, TextInput, useEffect, useState } from "@webpack/common";
+import { SettingsRouter, TextInput, useEffect, useState } from "@webpack/common";
 
 interface Props {
     props: ModalProps;
@@ -33,13 +34,13 @@ export function SetWallpaperModal({ props, onSelect, initialUrl }: Props) {
     return (
         <ModalRoot {...props} size={ModalSize.SMALL}>
             <ModalHeader>
-                <Text variant="heading-lg/normal" style={{ marginBottom: 8 }}>
+                <Paragraph size="lg" style={{ marginBottom: 8 }}>
                     Set wallpaper
-                </Text>
+                </Paragraph>
             </ModalHeader>
             <ModalContent>
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    <Text>The image url</Text>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
+                    <Paragraph>The image url</Paragraph>
                     <TextInput
                         value={url}
                         onChange={u => {
@@ -51,9 +52,9 @@ export function SetWallpaperModal({ props, onSelect, initialUrl }: Props) {
                     {cspError && (
                         <>
 
-                            <Text style={{ color: "var(--text-danger)" }}>
+                            <Paragraph style={{ color: "var(--text-danger)" }}>
                                 Uh oh! The image URL you provided is not allowed by the Content Security Policy. You can allow it in the Vencord Theme settings!
-                            </Text>
+                            </Paragraph>
                             <Button
                                 onClick={() => { props.onClose(); SettingsRouter.open("VencordThemes"); }}
                             >
@@ -76,7 +77,6 @@ export function SetWallpaperModal({ props, onSelect, initialUrl }: Props) {
                     <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                         <Button onClick={props.onClose}>Cancel</Button>
                         <Button
-                            color={Button.Colors.BRAND}
                             onClick={() => {
                                 onSelect(url);
                                 props.onClose();

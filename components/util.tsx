@@ -6,10 +6,11 @@
 
 import { openModal } from "@utils/modal";
 import { makeCodeblock } from "@utils/text";
-import { Button, Parser, Text } from "@webpack/common";
+import { Parser } from "@webpack/common";
 
 import { settings } from "..";
 import { SetWallpaperModal } from "./modal";
+import { Button, Paragraph } from "@components/index";
 
 export function GlobalDefaultComponent() {
     const setGlobal = (url?: string) => settings.store.globalDefaultURL = url ?? "";
@@ -21,12 +22,12 @@ export function GlobalDefaultComponent() {
             }}>Set a global wallpaper</Button>
 
             <Button
-                color={Button.Colors.RED}
+                variant="dangerPrimary"
                 onClick={() => setGlobal(void 0)}
             >Remove global default wallpaper</Button>
 
             <Button
-                color={Button.Colors.RED}
+                variant="dangerPrimary"
                 onClick={() => {
                     settings.store.channelRecord = {};
                     settings.store.guildRecord = {};
@@ -37,32 +38,33 @@ export function GlobalDefaultComponent() {
     );
 }
 
+const tipText = `
+.vc-wpfree-wp-container {
+    transform: scaleX(-1); /* flip it horizontally */
+    filter: blur(4px); /* apply a blur */
+    opacity: 0.7; /* self-explanatory */
+}
+
+/* If you don't like embeds being transparent */
+
+[class*=embedFull__] {
+    background: var(--background-surface-high) !important;
+}
+
+/* the same for codeblocks (or use ShikiCodeblocks) */
+
+.hljs {
+    background-color: var(--background-base-lowest) !important;
+}`;
+
 export function TipsComponent() {
-    const tipText = `
-    .vc-wpfree-wp-container {
-        transform: scaleX(-1); /* flip it horizontally */
-        filter: blur(4px); /* apply a blur */
-        opacity: 0.7; /* self-explanatory */
-    }
-
-    /* If you don't like embeds being transparent */
-
-    [class*=embedFull__] {
-        background: var(--background-surface-high) !important;
-    }
-
-    /* the same for codeblocks (or use ShikiCodeblocks) */
-
-    .hljs {
-        background-color: var(--background-base-lowest) !important;
-    }`;
     return (
         <div style={{ userSelect: "text" }}>
             {!IS_WEB && (
                 <>
-                    <Text>
+                    <Paragraph>
                         you can use local files by having them in the vencord theme directory, and using the url <code>vencord:///themes/filename.ext</code>
-                    </Text>
+                    </Paragraph>
                     <Button onClick={() => VencordNative.themes.openFolder()}>
                         Open Theme Directory
                     </Button>
