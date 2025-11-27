@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { Button, Paragraph } from "@components/index";
 import { openModal } from "@utils/modal";
 import { makeCodeblock } from "@utils/text";
 import { Parser } from "@webpack/common";
 
 import { settings } from "..";
 import { SetWallpaperModal } from "./modal";
-import { Button, Paragraph } from "@components/index";
 
 export function GlobalDefaultComponent() {
-    const setGlobal = (url?: string) => settings.store.globalDefaultURL = url ?? "";
+    const setGlobal = (url: string | undefined) => settings.store.globalDefaultURL = url ?? "";
 
     return (
         <>

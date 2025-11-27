@@ -45,6 +45,20 @@ export const settings = definePluginSettings({
     }
 });
 
+function WallpaperState(channel: Channel) {
+    const { channelRecord, guildRecord, globalDefaultURL } = settings.use(["channelRecord", "guildRecord", "globalDefaultURL"]);
+
+    const channelUrl = channelRecord[channel.id];
+    if (channelUrl) return { url: channelUrl, source: channel.id };
+
+    const guildUrl = channel.guild_id ? guildRecord[channel.guild_id] : undefined;
+    if (guildUrl) return { url: guildUrl, source: channel.guild_id };
+
+    if (globalDefaultURL) return { url: globalDefaultURL, source: "global" };
+
+    return { url: null, source: null };
+}
+
 export default definePlugin({
     name: "WallpaperFree",
     authors: [Devs.Joona],
@@ -56,11 +70,11 @@ export default definePlugin({
             replacement: [
                 {
                     match: /return.{1,150},(?=keyboardModeEnabled)/,
-                    replace: "const vcWallpaperFreeUrl=$self.WallpaperState(arguments[0].channel);$&vcWallpaperFreeUrl,"
+                    replace: "const vcWallpaperFree=$self.WallpaperState(arguments[0].channel);$&vcWallpaperFree,"
                 },
                 {
                     match: /}\)]}\)](?=.{1,30}messages-)/,
-                    replace: "$&.toSpliced(0,0,$self.Wallpaper({url:this.props.vcWallpaperFreeUrl}))"
+                    replace: "$&.toSpliced(0,0,$self.Wallpaper(this.props.vcWallpaperFree))"
                 }
             ]
         }
@@ -73,26 +87,16 @@ export default definePlugin({
         "gdm-context": ChannelContextPatch,
         "guild-context": GuildContextPatch,
     },
-    Wallpaper({ url }: { url: string | undefined; }) {
+
+    Wallpaper({ url, source }: ReturnType<typeof WallpaperState>) {
         // no we cant place the hook here
         if (!url) return null;
 
-        return <div
-            className="vc-wpfree-wp-container"
-            style={{
-                backgroundImage: `url(${url})`,
-            }}></div>;
+        return <div className="vc-wpfree-wp-container" data-wallpaper-source={source} style={{ backgroundImage: `url(${url})` }}></div>;
     },
-    WallpaperState(channel: Channel) {
-        const { channelRecord, guildRecord, globalDefaultURL } = settings.use(["channelRecord", "guildRecord", "globalDefaultURL"]);
 
-        const url = channelRecord[channel.id]
-            || (channel.guild_id ? guildRecord[channel.guild_id] : undefined)
-            || globalDefaultURL
-            || undefined;
+    WallpaperState,
 
-        return url;
-    },
     start() {
         if (Object.keys(settings.store.channelRecord).length > 0
             || Object.keys(settings.store.guildRecord).length > 0
