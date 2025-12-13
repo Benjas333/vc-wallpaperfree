@@ -48,8 +48,8 @@ export const settings = definePluginSettings({
 function WallpaperState(channel: Channel) {
     const { channelRecord, guildRecord, globalDefaultURL } = settings.use(["channelRecord", "guildRecord", "globalDefaultURL"]);
 
-    const channelUrl = channelRecord[channel.id];
-    if (channelUrl) return { url: channelUrl, source: channel.id };
+    const channelUrl = channelRecord[channel.id] ?? channelRecord[channel.parent_id];
+    if (channelUrl) return { url: channelUrl, source: channelRecord[channel.id] ? channel.id : channel.parent_id };
 
     const guildUrl = channel.guild_id ? guildRecord[channel.guild_id] : undefined;
     if (guildUrl) return { url: guildUrl, source: channel.guild_id };

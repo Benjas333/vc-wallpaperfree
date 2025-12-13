@@ -6,7 +6,10 @@
 
 import { Button, Paragraph } from "@components/index";
 import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize } from "@utils/modal";
-import { SettingsRouter, TextInput, useEffect, useState } from "@webpack/common";
+import { findByPropsLazy } from "@webpack";
+import { TextInput, useEffect, useState } from "@webpack/common";
+
+const UserSettingsModal = findByPropsLazy("openUserSettings");
 
 interface Props {
     props: ModalProps;
@@ -56,7 +59,7 @@ export function SetWallpaperModal({ props, onSelect, initialUrl }: Props) {
                                 Uh oh! The image URL you provided is not allowed by the Content Security Policy. You can allow it in the Vencord Theme settings!
                             </Paragraph>
                             <Button
-                                onClick={() => { props.onClose(); SettingsRouter.open("VencordThemes"); }}
+                                onClick={() => { props.onClose(); UserSettingsModal.openUserSettings("vencord_themes_panel"); }}
                             >
                                 Open Theme Settings
                             </Button>
