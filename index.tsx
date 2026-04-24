@@ -12,20 +12,15 @@ import definePlugin, { OptionType } from "@utils/types";
 import { Channel } from "@vencord/discord-types";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
-import { GlobalDefaultComponent, TipsComponent } from "./components/util";
+import { Buttons } from "./components/util";
 import { migrateFromStore } from "./store";
 
 
 export const settings = definePluginSettings({
-    globalDefault: {
+    buttons: {
         description: "Set a global default wallpaper for all channels.",
         type: OptionType.COMPONENT,
-        component: GlobalDefaultComponent
-    },
-    stylingTips: {
-        description: "",
-        type: OptionType.COMPONENT,
-        component: TipsComponent,
+        component: Buttons
     },
     channelRecord: {
         description: "",
@@ -69,8 +64,8 @@ export default definePlugin({
             group: true,
             replacement: [
                 {
-                    match: /return.{1,150},(?=keyboardModeEnabled)/,
-                    replace: "const vcWallpaperFree=$self.WallpaperState(arguments[0].channel);$&vcWallpaperFree,"
+                    match: /keyboardModeEnabled:\(/,
+                    replace: "vcWallpaperFree:$self.WallpaperState(arguments[0].channel),$&"
                 },
                 {
                     match: /}\)]}\)](?=.{1,30}messages-)/,

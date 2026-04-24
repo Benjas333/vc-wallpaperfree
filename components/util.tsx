@@ -4,15 +4,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Button, Paragraph } from "@components/index";
-import { openModal } from "@utils/modal";
+import { BaseText, Button, Paragraph } from "@components/index";
+
+import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import { makeCodeblock } from "@utils/text";
-import { Parser } from "@webpack/common";
+import { GuildStore, Parser } from "@webpack/common";
 
 import { settings } from "..";
 import { SetWallpaperModal } from "./modal";
 
-export function GlobalDefaultComponent() {
+function GlobalDefaultComponent() {
     const setGlobal = (url: string | undefined) => settings.store.globalDefaultURL = url ?? "";
 
     return (
@@ -38,6 +39,52 @@ export function GlobalDefaultComponent() {
     );
 }
 
+function ViewAllWallpapers({ props }: { props: ModalProps; }) {
+    const { channelRecord, guildRecord } = settings.use(["channelRecord", "guildRecord"]);
+
+    return (
+        <ModalRoot size={ModalSize.MEDIUM} {...props}>
+            <ModalHeader>
+                <BaseText size="lg" weight="semibold" style={{ flexGrow: 1 }}>All Wallpapers</BaseText>
+            </ModalHeader>
+
+            <ModalContent>
+                {[
+                    ...Object.entries(channelRecord)
+                        .filter(([, url]) => !!url)
+                        .map(([id, url]) => ({ key: `c-${id}`, line: `<#${id}>: ${url}`, url })),
+                    ...Object.entries(guildRecord)
+                        .filter(([, url]) => !!url)
+                        .map(([id, url]) => ({ key: `g-${id}`, line: `${GuildStore.getGuild(id)?.name ?? id}: ${url}`, url }))
+                ].map(({ key, line, url }) => (
+                    <div key={key} style={{ marginBottom: 10 }}>
+                        <Paragraph>{Parser.parse(line)}</Paragraph>
+                        <img
+                            src={url}
+                            style={{
+                                display: "block",
+                                width: "100%",
+                                height: "auto",
+                                objectFit: "cover",
+                                borderRadius: 8
+                            }}
+                        />
+                    </div>
+                ))}
+            </ModalContent>
+        </ModalRoot>
+    );
+}
+
+function ViewAllWallpapersButton() {
+    return (
+        <Button
+            onClick={() => openModal(props => <ViewAllWallpapers props={props} />)}>
+            View all Wallpapers
+        </Button>
+    );
+}
+
 const tipText = `
 .vc-wpfree-wp-container {
     transform: scaleX(-1); /* flip it horizontally */
@@ -57,7 +104,7 @@ const tipText = `
     background-color: var(--background-base-lowest) !important;
 }`;
 
-export function TipsComponent() {
+function TipsComponent() {
     return (
         <div style={{ userSelect: "text" }}>
             {!IS_WEB && (
@@ -78,3 +125,12 @@ export function TipsComponent() {
     );
 }
 
+export function Buttons() {
+    return (
+        <>
+            <GlobalDefaultComponent />
+            <TipsComponent />
+            <ViewAllWallpapersButton />
+        </>
+    );
+}
